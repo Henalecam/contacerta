@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { FaChartLine, FaCalculator, FaArrowRight, FaMoneyBillWave, FaFileInvoice, FaUsers, FaBuilding, FaClock } from 'react-icons/fa';
+import { FaChartLine, FaCalculator, FaArrowRight, FaMoneyBillWave, FaFileInvoice, FaCheck } from 'react-icons/fa';
 
 interface QuizOption {
   value: string;
@@ -20,47 +20,51 @@ interface QuizQuestion {
 const questions: QuizQuestion[] = [
   {
     id: 1,
-    question: 'Qual o faturamento mensal aproximado da sua empresa?',
+    question: "Qual é o seu faturamento mensal aproximado?",
     options: [
-      { value: 'low', label: 'Até R$ 50.000', baseValue: 50000 },
-      { value: 'medium', label: 'R$ 50.000 - R$ 200.000', baseValue: 125000 },
-      { value: 'high', label: 'Acima de R$ 200.000', baseValue: 300000 }
+      { value: "ate50k", label: "Até R$ 50.000", baseValue: 50000 },
+      { value: "50k-200k", label: "R$ 50.000 - R$ 200.000", baseValue: 125000 },
+      { value: "200k-500k", label: "R$ 200.000 - R$ 500.000", baseValue: 350000 },
+      { value: "acima500k", label: "Acima de R$ 500.000", baseValue: 750000 }
     ]
   },
   {
     id: 2,
-    question: 'Quantos funcionários sua empresa possui?',
+    question: "Quantos funcionários sua empresa possui?",
     options: [
-      { value: 'small', label: '1-5 funcionários', multiplier: 0.8 },
-      { value: 'medium', label: '6-20 funcionários', multiplier: 1.2 },
-      { value: 'large', label: 'Mais de 20 funcionários', multiplier: 1.5 }
+      { value: "ate5", label: "Até 5 funcionários", multiplier: 1.2 },
+      { value: "6-20", label: "6 a 20 funcionários", multiplier: 1.5 },
+      { value: "21-50", label: "21 a 50 funcionários", multiplier: 1.8 },
+      { value: "acima50", label: "Acima de 50 funcionários", multiplier: 2.2 }
     ]
   },
   {
     id: 3,
-    question: 'Quantos documentos fiscais você emite por mês?',
+    question: "Quantos documentos fiscais você emite por mês?",
     options: [
-      { value: 'low', label: 'Até 100 documentos', multiplier: 0.5 },
-      { value: 'medium', label: '100-500 documentos', multiplier: 1.0 },
-      { value: 'high', label: 'Mais de 500 documentos', multiplier: 1.5 }
+      { value: "ate100", label: "Até 100 documentos", multiplier: 1.1 },
+      { value: "101-500", label: "101 a 500 documentos", multiplier: 1.3 },
+      { value: "501-1000", label: "501 a 1000 documentos", multiplier: 1.6 },
+      { value: "acima1000", label: "Acima de 1000 documentos", multiplier: 2.0 }
     ]
   },
   {
     id: 4,
-    question: 'Qual o regime tributário da sua empresa?',
+    question: "Qual é o seu regime tributário?",
     options: [
-      { value: 'simples', label: 'Simples Nacional', multiplier: 0.7 },
-      { value: 'lucro', label: 'Lucro Presumido', multiplier: 1.0 },
-      { value: 'real', label: 'Lucro Real', multiplier: 1.3 }
+      { value: "simples", label: "Simples Nacional", multiplier: 1.2 },
+      { value: "lucro", label: "Lucro Presumido", multiplier: 1.5 },
+      { value: "real", label: "Lucro Real", multiplier: 1.8 }
     ]
   },
   {
     id: 5,
-    question: 'Você precisa de consultoria fiscal frequente?',
+    question: "Com que frequência você precisa de consultoria fiscal?",
     options: [
-      { value: 'never', label: 'Raramente', multiplier: 0.5 },
-      { value: 'sometimes', label: 'Ocasionalmente', multiplier: 1.0 },
-      { value: 'always', label: 'Frequentemente', multiplier: 1.5 }
+      { value: "raro", label: "Raramente", multiplier: 1.1 },
+      { value: "mensal", label: "Mensalmente", multiplier: 1.3 },
+      { value: "semanal", label: "Semanalmente", multiplier: 1.6 },
+      { value: "diario", label: "Diariamente", multiplier: 2.0 }
     ]
   }
 ];
@@ -70,16 +74,16 @@ export default function QuizSection() {
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
   const [showResult, setShowResult] = useState(false);
 
-  const handleAnswer = (value: string) => {
+  const handleAnswer = useCallback((value: string) => {
     setAnswers(prev => ({ ...prev, [currentQuestion]: value }));
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(prev => prev + 1);
     } else {
       setShowResult(true);
     }
-  };
+  }, [currentQuestion]);
 
-  const calculateSavings = () => {
+  const calculateSavings = useCallback(() => {
     const baseQuestion = questions[0];
     const baseAnswer = answers[0];
     const baseOption = baseQuestion.options.find(opt => opt.value === baseAnswer);
@@ -96,16 +100,18 @@ export default function QuizSection() {
       }
     }
 
-    // Cálculo baseado no faturamento e multiplicadores
-    const baseSavings = baseOption.baseValue * 0.15; // 15% do faturamento como base
+    const baseSavings = baseOption.baseValue * 0.15;
     return Math.round(baseSavings * totalMultiplier);
-  };
+  }, [answers]);
 
-  const resetQuiz = () => {
+  const resetQuiz = useCallback(() => {
     setCurrentQuestion(0);
     setAnswers({});
     setShowResult(false);
-  };
+  }, []);
+
+  const currentQuestionData = useMemo(() => questions[currentQuestion], [currentQuestion]);
+  const progressPercentage = useMemo(() => (currentQuestion / questions.length) * 100, [currentQuestion]);
 
   if (showResult) {
     const savings = calculateSavings();
@@ -130,46 +136,60 @@ export default function QuizSection() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-xl">
-                <div className="flex items-center mb-4">
-                  <FaMoneyBillWave className="text-2xl text-accent dark:text-accent-light mr-3" />
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Economia Mensal</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="bg-gray-50 dark:bg-gray-700 p-6 rounded-xl"
+              >
+                <div className="flex items-center justify-center mb-4">
+                  <FaMoneyBillWave className="text-3xl text-accent dark:text-accent-light mr-3" />
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                    Economia Mensal
+                  </h3>
                 </div>
-                <p className="text-4xl font-bold text-primary dark:text-primary-light">
+                <p className="text-4xl font-bold text-accent dark:text-accent-light text-center">
                   R$ {monthlySavings.toLocaleString('pt-BR')}
                 </p>
-              </div>
+              </motion.div>
 
-              <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-xl">
-                <div className="flex items-center mb-4">
-                  <FaChartLine className="text-2xl text-accent dark:text-accent-light mr-3" />
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Economia Anual</h3>
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="bg-gray-50 dark:bg-gray-700 p-6 rounded-xl"
+              >
+                <div className="flex items-center justify-center mb-4">
+                  <FaFileInvoice className="text-3xl text-accent dark:text-accent-light mr-3" />
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                    Economia Anual
+                  </h3>
                 </div>
-                <p className="text-4xl font-bold text-primary dark:text-primary-light">
+                <p className="text-4xl font-bold text-accent dark:text-accent-light text-center">
                   R$ {annualSavings.toLocaleString('pt-BR')}
                 </p>
-              </div>
+              </motion.div>
             </div>
 
-            <div className="bg-accent/5 dark:bg-accent-light/5 p-6 rounded-xl mb-8">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Benefícios Incluídos:</h3>
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                Benefícios Incluídos:
+              </h3>
               <ul className="space-y-3">
-                <li className="flex items-center">
-                  <FaFileInvoice className="text-accent dark:text-accent-light mr-3" />
-                  <span className="text-gray-600 dark:text-gray-300">Gestão fiscal otimizada</span>
+                <li className="flex items-center text-gray-600 dark:text-gray-300">
+                  <FaCheck className="text-accent dark:text-accent-light mr-2" />
+                  Gestão fiscal otimizada
                 </li>
-                <li className="flex items-center">
-                  <FaUsers className="text-accent dark:text-accent-light mr-3" />
-                  <span className="text-gray-600 dark:text-gray-300">Suporte contábil dedicado</span>
+                <li className="flex items-center text-gray-600 dark:text-gray-300">
+                  <FaCheck className="text-accent dark:text-accent-light mr-2" />
+                  Suporte contábil dedicado
                 </li>
-                <li className="flex items-center">
-                  <FaBuilding className="text-accent dark:text-accent-light mr-3" />
-                  <span className="text-gray-600 dark:text-gray-300">Redução de riscos fiscais</span>
+                <li className="flex items-center text-gray-600 dark:text-gray-300">
+                  <FaCheck className="text-accent dark:text-accent-light mr-2" />
+                  Redução de riscos fiscais
                 </li>
-                <li className="flex items-center">
-                  <FaClock className="text-accent dark:text-accent-light mr-3" />
-                  <span className="text-gray-600 dark:text-gray-300">Mais tempo para focar no seu negócio</span>
+                <li className="flex items-center text-gray-600 dark:text-gray-300">
+                  <FaCheck className="text-accent dark:text-accent-light mr-2" />
+                  Mais tempo para focar no seu negócio
                 </li>
               </ul>
             </div>
@@ -177,7 +197,7 @@ export default function QuizSection() {
             <div className="text-center">
               <button
                 onClick={resetQuiz}
-                className="inline-flex items-center justify-center px-6 py-3 bg-accent text-white dark:bg-accent-light dark:text-gray-900 rounded-lg hover:bg-accent-dark dark:hover:bg-accent transition-colors duration-200 shadow-lg hover:shadow-accent/20 dark:hover:shadow-accent-light/20"
+                className="btn-primary inline-flex items-center"
               >
                 Refazer Quiz
                 <FaArrowRight className="ml-2" />
@@ -213,23 +233,23 @@ export default function QuizSection() {
                 Pergunta {currentQuestion + 1} de {questions.length}
               </span>
               <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                {Math.round((currentQuestion / questions.length) * 100)}% completo
+                {Math.round(progressPercentage)}% completo
               </span>
             </div>
             <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
               <div
                 className="bg-accent dark:bg-accent-light h-2 rounded-full transition-all duration-300"
-                style={{ width: `${(currentQuestion / questions.length) * 100}%` }}
+                style={{ width: `${progressPercentage}%` }}
               />
             </div>
           </div>
 
           <div className="mb-8">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-              {questions[currentQuestion].question}
+              {currentQuestionData.question}
             </h3>
             <div className="grid gap-4">
-              {questions[currentQuestion].options.map((option) => (
+              {currentQuestionData.options.map((option) => (
                 <button
                   key={option.value}
                   onClick={() => handleAnswer(option.value)}
