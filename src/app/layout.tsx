@@ -7,6 +7,7 @@ const inter = Inter({
   variable: "--font-inter",
   display: "swap",
   preload: true,
+  adjustFontFallback: false,
 });
 
 const poppins = Poppins({
@@ -15,6 +16,7 @@ const poppins = Poppins({
   variable: "--font-poppins",
   display: "swap",
   preload: true,
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {
@@ -52,6 +54,8 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
       </head>
       <body className="font-sans antialiased relative bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800" suppressHydrationWarning>
         <div className="relative z-10 outline outline-4 outline-accent rounded-3xl shadow-[0_0_0_4px_#0ff,0_0_16px_4px_#0ff,0_0_32px_8px_#f0f] transition-shadow duration-300">
