@@ -1,26 +1,124 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
   }
 }
 
+@layer components {
+  .btn-primary {
+    @apply bg-accent text-white font-semibold py-3 px-6 rounded-lg;
+  }
+  
+  .btn-secondary {
+    @apply bg-primary text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200;
+  }
+
+  .section-padding {
+    @apply py-16 md:py-24;
+  }
+
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@keyframes blob1 {
+  0%, 100% { transform: scale(1) translateY(0); opacity: 0.85; }
+  20% { transform: scale(1.15, 0.92) translateY(-24px); opacity: 1; }
+  50% { transform: scale(0.95, 1.08) translateY(18px); opacity: 0.95; }
+  75% { transform: scale(1.08, 1.02) translateY(-12px); opacity: 0.92; }
+}
+@keyframes blob2 {
+  0%, 100% { transform: scale(1) translateY(0); opacity: 0.7; }
+  30% { transform: scale(1.18, 0.88) translateY(28px); opacity: 0.95; }
+  60% { transform: scale(0.92, 1.15) translateY(-18px); opacity: 0.8; }
+}
+@keyframes blob3 {
+  0%, 100% { transform: scale(1) translateY(0); opacity: 0.6; }
+  20% { transform: scale(1.15, 0.85) translateY(-18px); opacity: 0.85; }
+  60% { transform: scale(0.85, 1.18) translateY(18px); opacity: 0.7; }
+}
+@keyframes line1 {
+  0%, 100% { stroke-dashoffset: 0; opacity: 0.7; }
+  50% { stroke-dashoffset: 120; opacity: 1; }
+}
+.animate-blob1 { animation: blob1 14s cubic-bezier(0.4,0,0.2,1) infinite; }
+.animate-blob2 { animation: blob2 18s cubic-bezier(0.4,0,0.2,1) infinite; }
+.animate-blob3 { animation: blob3 16s cubic-bezier(0.4,0,0.2,1) infinite; }
+.animate-line1 { stroke-dasharray: 1000; animation: line1 10s cubic-bezier(0.4,0,0.2,1) infinite; }
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Reduzir opacidade dos gradientes para maior visibilidade do fundo */
+  background-color: #fff;
+  background-image:
+    linear-gradient(120deg, rgba(0, 255, 255, 0.08) 0%, rgba(0, 0, 0, 0.08) 100%),
+    linear-gradient(90deg, rgba(255, 0, 150, 0.06) 0%, rgba(0, 255, 255, 0.06) 100%),
+    var(--background-animated, none);
+  background-blend-mode: lighten, lighten, normal;
+  min-height: 100vh;
+  /* Animação sutil nas linhas */
+  animation: bg-move 32s linear infinite;
+}
+body.dark {
+  background-color: #111827;
+  background-image:
+    linear-gradient(120deg, rgba(0, 255, 255, 0.08) 0%, rgba(0, 0, 0, 0.08) 100%),
+    linear-gradient(90deg, rgba(255, 0, 150, 0.06) 0%, rgba(0, 255, 255, 0.06) 100%),
+    var(--background-animated, none);
+  background-blend-mode: lighten, lighten, normal;
+}
+
+@keyframes bg-move {
+  0% { background-position: 0 0, 0 0, 0 0; }
+  100% { background-position: 80px 40px, -80px -40px, 0 0; }
+}
+
+@media (prefers-color-scheme: light) {
+  body {
+    background-color: #fff;
+    background-image:
+      repeating-linear-gradient(135deg, rgba(59,130,246,0.08) 0 2px, transparent 2px 40px),
+      repeating-linear-gradient(225deg, rgba(16,185,129,0.08) 0 2px, transparent 2px 40px),
+      linear-gradient(120deg, rgba(124,58,237,0.06) 0%, rgba(6,182,212,0.06) 100%);
+    background-blend-mode: lighten, lighten, normal;
+  }
+}
+
+.pattern-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url('/images/pattern.svg');
+  background-repeat: repeat;
+  background-size: 120px 120px;
+  opacity: 0.13;
+}
+@media (prefers-color-scheme: dark) {
+  .pattern-overlay {
+    opacity: 0.18;
+    filter: grayscale(0.5) brightness(0.7) invert(0.85);
+  }
+}
+
+/* Borda neon/gradient para o container principal */
+body > div:first-child {
+  outline: 4px solid transparent;
+  outline-offset: 0px;
+  border-radius: 1.5rem;
+  box-shadow: 0 0 0 4px #0ff, 0 0 16px 4px #0ff, 0 0 32px 8px #f0f;
+  transition: box-shadow 0.3s;
 }
