@@ -56,6 +56,17 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+        {/* OG Meta Tags */}
+        <meta property="og:title" content="ContaCerta: Controle e precisão para suas finanças" />
+        <meta property="og:description" content="Acesse o ContaCerta e tenha controle total das suas finanças com praticidade, precisão e segurança. Experimente agora!" />
+        <meta property="og:image" content="/ContaCerta.png" />
+        <meta property="og:url" content="https://contacerta.com" />
+        <meta property="og:type" content="website" />
+        {/* Twitter Meta Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="ContaCerta: Controle e precisão para suas finanças" />
+        <meta name="twitter:description" content="Acesse o ContaCerta e tenha controle total das suas finanças com praticidade, precisão e segurança. Experimente agora!" />
+        <meta name="twitter:image" content="/ContaCerta.png" />
       </head>
       <body className="font-sans antialiased relative bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800" suppressHydrationWarning>
         <div className="relative z-10 outline outline-4 outline-accent rounded-3xl shadow-[0_0_0_4px_#0ff,0_0_16px_4px_#0ff,0_0_32px_8px_#f0f] transition-shadow duration-300">
